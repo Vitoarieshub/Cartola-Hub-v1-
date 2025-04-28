@@ -8,7 +8,7 @@ Fluent:Notify({ Title = "executado!", Content = "executando com sucesso" })
 local Window = Fluent:CreateWindow({
     Title = "Cartola Hub - Brookhaven " .. Fluent.Version,
     TabWidth = 160, 
-    Size = UDim2.fromOffset(580, 460), 
+    Size = UDim2.fromOffset(580, 450), 
     Theme = "Dark"
 })
 
@@ -57,6 +57,47 @@ Tabs.Main:AddSlider("JumpPower", {
         setHumanoidProperty("JumpPower", value)
     end
 })
+
+-- Variável para armazenar o estado do FOV (ativado ou desativado)
+local fovAtivo = false
+local fovPadrao = 70 -- Define o valor padrão do FOV quando desativado
+local fovAtual = 70   -- Valor inicial do FOV ajustável
+
+-- Criando Slider para ajustar o FOV
+Tabs.Main:AddSlider("FOV", {
+    Title = "FOV",
+    Description = "Ajusta o campo de visão da câmera",
+    Default = fovAtual,
+    Min = 30,
+    Max = 120, -- Máximo permitido pelo Roblox
+    Rounding = 1,
+
+    Callback = function(value)
+        fovAtual = value
+        if fovAtivo then
+            game.Workspace.CurrentCamera.FieldOfView = fovAtual
+        end
+    end
+})
+
+-- Criando Toggle para ativar/desativar FOV
+Tabs.Main:AddToggle("FOV_Toggle", {
+    Title = "FOV",
+    Description = "Ativa ou desativa  campo de visão",
+    Default = false,
+
+    Callback = function(state)
+        fovAtivo = state
+        if fovAtivo then
+            game.Workspace.CurrentCamera.FieldOfView = fovAtual -- Aplica o FOV escolhido
+        else
+            game.Workspace.CurrentCamera.FieldOfView = fovPadrao -- Volta ao normal
+        end
+    end
+})
+
+-- parágrafos 
+Tabs.Main:AddParagraph({ Title = "Esp" })
 
 -- Variável para armazenar o estado do ESP
 local espAtivado = false
@@ -183,42 +224,137 @@ Tabs.Main:AddToggle("esp_nome_distancia", {
     end
 })
 
--- Variável para armazenar o estado do FOV (ativado ou desativado)
-local fovAtivo = false
-local fovPadrao = 70 -- Define o valor padrão do FOV quando desativado
-local fovAtual = 70   -- Valor inicial do FOV ajustável
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
--- Criando Slider para ajustar o FOV
-Tabs.Main:AddSlider("FOV", {
-    Title = "FOV",
-    Description = "Ajusta o campo de visão da câmera",
-    Default = fovAtual,
-    Min = 30,
-    Max = 120, -- Máximo permitido pelo Roblox
-    Rounding = 1,
+local player = Players.LocalPlayer
+local espEnabled = false
+local skeletons = {}
 
-    Callback = function(value)
-        fovAtual = value
-        if fovAtivo then
-            game.Workspace.CurrentCamera.FieldOfView = fovAtual
+-- Função para criar linhas do esqueleto para um jogador
+local function createSkeleton(playerTarget)
+    local lines = {}
+
+    local partsToConnect = {
+        {"Head", "UpperTorso"},
+        {"UpperTorso", "LowerTorso"},
+        {"UpperTorso", "LeftUpperArm"},
+        {"LeftUpperArm", "LeftLowerArm"},
+        {"LeftLowerArm", "LeftHand"},
+        {"UpperTorso", "RightUpperArm"},
+        {"RightUpperArm", "RightLowerArm"},
+        {"RightLowerArm", "RightHand"},
+        {"LowerTorso", "LeftUpperLeg"},
+        {"LeftUpperLeg", "LeftLowerLeg"},
+        {"LeftLowerLeg", "LeftFoot"},
+        {"LowerTorso", "RightUpperLeg"},
+        {"RightUpperLeg", "RightLowerLeg"},
+        {"RightLowerLeg", "RightFoot"},
+    }
+
+    for _, _ in ipairs(partsToConnect) do
+        local line = Drawing.new("Line")
+        line.Color = Color3.new(1, 1, 1) -- Cor branca
+        line.Thickness = 2
+        line.Transparency = 1
+        line.Visible = false
+        table.insert(lines, line)
+    end
+
+    skeletons[playerTarget] = {
+        Lines = lines,
+        Connections = partsToConnect
+    }
+end
+
+-- Função para remover linhas
+local function removeSkeleton(playerTarget)
+    if skeletons[playerTarget] then
+        for _, line in ipairs(skeletons[playerTarget].Lines) do
+            line:Remove()
+        end
+        skeletons[playerTarget] = nil
+    end
+end
+
+-- Atualizar Skeletons
+local function updateSkeletons()
+    if not espEnabled then
+        for _, skeleton in pairs(skeletons) do
+            for _, line in ipairs(skeleton.Lines) do
+                line.Visible = false
+            end
+        end
+        return
+    end
+
+    for _, target in pairs(Players:GetPlayers()) do
+        if target ~= player and target.Character then
+            local char = target.Character
+            local skeleton = skeletons[target]
+
+            if skeleton then
+                for i, connection in ipairs(skeleton.Connections) do
+                    local part0 = char:FindFirstChild(connection[1])
+                    local part1 = char:FindFirstChild(connection[2])
+                    local line = skeleton.Lines[i]
+
+                    if part0 and part1 then
+                        local pos0, onScreen0 = workspace.CurrentCamera:WorldToViewportPoint(part0.Position)
+                        local pos1, onScreen1 = workspace.CurrentCamera:WorldToViewportPoint(part1.Position)
+
+                        if onScreen0 and onScreen1 then
+                            line.From = Vector2.new(pos0.X, pos0.Y)
+                            line.To = Vector2.new(pos1.X, pos1.Y)
+                            line.Visible = true
+                        else
+                            line.Visible = false
+                        end
+                    else
+                        line.Visible = false
+                    end
+                end
+            end
+        elseif skeletons[target] then
+            for _, line in ipairs(skeletons[target].Lines) do
+                line.Visible = false
+            end
         end
     end
-})
+end
 
--- Criando Toggle para ativar/desativar FOV
-Tabs.Main:AddToggle("FOV_Toggle", {
-    Title = "FOV",
-    Description = "Ativa ou desativa  campo de visão",
+-- Atualizar sempre
+RunService.RenderStepped:Connect(updateSkeletons)
+
+-- Atualizar Skeletons quando players entram/saem
+Players.PlayerAdded:Connect(function(playerTarget)
+    if playerTarget ~= player then
+        createSkeleton(playerTarget)
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(playerTarget)
+    removeSkeleton(playerTarget)
+end)
+
+-- Criar Skeletons para jogadores que já estão no jogo
+for _, playerTarget in pairs(Players:GetPlayers()) do
+    if playerTarget ~= player then
+        createSkeleton(playerTarget)
+    end
+end
+
+-- Função que será chamada pelo Toggle
+local function toggleSkeleton(Value)
+    espEnabled = Value
+end
+
+-- Criar Toggle usando seu sistema
+Tabs.Main:AddToggle("espskeleton", {
+    Title = "ESP Skeleton",
+    Description = "Ativa/desativa Skeleton ESP nos players",
     Default = false,
-
-    Callback = function(state)
-        fovAtivo = state
-        if fovAtivo then
-            game.Workspace.CurrentCamera.FieldOfView = fovAtual -- Aplica o FOV escolhido
-        else
-            game.Workspace.CurrentCamera.FieldOfView = fovPadrao -- Volta ao normal
-        end
-    end
+    Callback = toggleSkeleton
 })
 
 Tabs.Exploits:AddButton({
