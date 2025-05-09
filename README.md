@@ -8,7 +8,7 @@ Fluent:Notify({ Title = "executado!", Content = "executando com sucesso" })
 local Window = Fluent:CreateWindow({
     Title = "Cartola Hub - Brookhaven " .. Fluent.Version,
     TabWidth = 160, 
-    Size = UDim2.fromOffset(580, 450), 
+    Size = UDim2.fromOffset(460, 350), 
     Theme = "Dark"
 })
 
@@ -365,6 +365,13 @@ Tabs.Exploits:AddButton({
 })
 
 Tabs.Exploits:AddButton({
+    Title = "Teleport",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinity2346/Tect-Menu/main/Teleport%20Gui.lua"))()
+    end
+})
+
+Tabs.Exploits:AddButton({
     Title = "Grudar portas",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Bring-Parts-27586"))()
@@ -403,6 +410,16 @@ Tabs.Settings:AddButton({
 })
 
 Tabs.Settings:AddButton({
+    Title = "SP Hub",
+    Callback = function()
+        --[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/refs/heads/main/Brookhaven"))()
+    end
+})
+
+Tabs.Settings:AddButton({
     Title = "SanderX",
     Callback = function()
         loadstring(game:HttpGet('https://raw.githubusercontent.com/kigredns/SanderXV4.2.2/refs/heads/main/New.lua'))()
@@ -410,11 +427,15 @@ Tabs.Settings:AddButton({
 })
 
 Tabs.Settings:AddButton({
-    Title = "SP Hub",
+    Title = "Sander-XY",
     Callback = function()
-        --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
-loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/refs/heads/main/Brookhaven"))()
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Brookhaven-RP-Sander-XY-35845"))()
+    end
+})
+
+Tabs.Settings:AddButton({
+    Title = "SystemBroken",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script"))()
     end
 })
