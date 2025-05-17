@@ -14,11 +14,13 @@ local Window = Fluent:CreateWindow({
 
 local Tabs = {
     Main = Window:AddTab({ Title = "Main" }),
+    Esp = Window:AddTab({ Title = "Esp" }),
+    Teleport = Window:AddTab({ Title = "Teleport" }),
     Exploits = Window:AddTab({ Title = "Troll" }),
     Settings = Window:AddTab({ Title = "Scripts" })
 }
 -- parágrafos 
-Tabs.Main:AddParagraph({ Title = "Desenvolvedores", Content = "@kwooso4 @Vito0296poq @KainagamerTigre" })
+Tabs.Main:AddParagraph({ Title = "Desenvolvedores", Content = "@kwooso4 @Vito0296poq" })
 
 -- botões 
 Tabs.Main:AddButton({ Title = "infinite jump", Callback = function() 
@@ -96,14 +98,11 @@ Tabs.Main:AddToggle("FOV_Toggle", {
     end
 })
 
--- parágrafos 
-Tabs.Main:AddParagraph({ Title = "Esp" })
-
 -- Variável para armazenar o estado do ESP
 local espAtivado = false
 local connections = {}
 
-Tabs.Main:AddToggle("esp_nome_distancia", {
+Tabs.Esp:AddToggle("esp_nome_distancia", {
     Title = "ESP Nome",
     Description = "Ativa/Desativa ESP Nome, HP, Distância e Dias",
     Default = false,
@@ -224,138 +223,89 @@ Tabs.Main:AddToggle("esp_nome_distancia", {
     end
 })
 
+-- Estado do ESP
+local espAtivado = false
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
 
-local player = Players.LocalPlayer
-local espEnabled = false
-local skeletons = {}
-
--- Função para criar linhas do esqueleto para um jogador
-local function createSkeleton(playerTarget)
-    local lines = {}
-
-    local partsToConnect = {
-        {"Head", "UpperTorso"},
-        {"UpperTorso", "LowerTorso"},
-        {"UpperTorso", "LeftUpperArm"},
-        {"LeftUpperArm", "LeftLowerArm"},
-        {"LeftLowerArm", "LeftHand"},
-        {"UpperTorso", "RightUpperArm"},
-        {"RightUpperArm", "RightLowerArm"},
-        {"RightLowerArm", "RightHand"},
-        {"LowerTorso", "LeftUpperLeg"},
-        {"LeftUpperLeg", "LeftLowerLeg"},
-        {"LeftLowerLeg", "LeftFoot"},
-        {"LowerTorso", "RightUpperLeg"},
-        {"RightUpperLeg", "RightLowerLeg"},
-        {"RightLowerLeg", "RightFoot"},
-    }
-
-    for _, _ in ipairs(partsToConnect) do
-        local line = Drawing.new("Line")
-        line.Color = Color3.new(1, 1, 1) -- Cor branca
-        line.Thickness = 2
-        line.Transparency = 1
-        line.Visible = false
-        table.insert(lines, line)
-    end
-
-    skeletons[playerTarget] = {
-        Lines = lines,
-        Connections = partsToConnect
-    }
-end
-
--- Função para remover linhas
-local function removeSkeleton(playerTarget)
-    if skeletons[playerTarget] then
-        for _, line in ipairs(skeletons[playerTarget].Lines) do
-            line:Remove()
-        end
-        skeletons[playerTarget] = nil
+-- Função para aplicar o Highlight
+local function aplicarHighlight(player)
+    if player == LocalPlayer then return end
+    local character = player.Character
+    if character and not character:FindFirstChild("ESPHighlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.Name = "ESPHighlight"
+        highlight.Adornee = character
+        highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Cor branca
+        highlight.FillTransparency = 1 -- Centro totalmente transparente
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Cor branca
+        highlight.OutlineTransparency = 0 -- Contorno totalmente opaco
+        highlight.Parent = character
     end
 end
 
--- Atualizar Skeletons
-local function updateSkeletons()
-    if not espEnabled then
-        for _, skeleton in pairs(skeletons) do
-            for _, line in ipairs(skeleton.Lines) do
-                line.Visible = false
-            end
-        end
-        return
-    end
-
-    for _, target in pairs(Players:GetPlayers()) do
-        if target ~= player and target.Character then
-            local char = target.Character
-            local skeleton = skeletons[target]
-
-            if skeleton then
-                for i, connection in ipairs(skeleton.Connections) do
-                    local part0 = char:FindFirstChild(connection[1])
-                    local part1 = char:FindFirstChild(connection[2])
-                    local line = skeleton.Lines[i]
-
-                    if part0 and part1 then
-                        local pos0, onScreen0 = workspace.CurrentCamera:WorldToViewportPoint(part0.Position)
-                        local pos1, onScreen1 = workspace.CurrentCamera:WorldToViewportPoint(part1.Position)
-
-                        if onScreen0 and onScreen1 then
-                            line.From = Vector2.new(pos0.X, pos0.Y)
-                            line.To = Vector2.new(pos1.X, pos1.Y)
-                            line.Visible = true
-                        else
-                            line.Visible = false
-                        end
-                    else
-                        line.Visible = false
-                    end
-                end
-            end
-        elseif skeletons[target] then
-            for _, line in ipairs(skeletons[target].Lines) do
-                line.Visible = false
-            end
+-- Função para remover o Highlight
+local function removerHighlight(player)
+    local character = player.Character
+    if character then
+        local highlight = character:FindFirstChild("ESPHighlight")
+        if highlight then
+            highlight:Destroy()
         end
     end
 end
 
--- Atualizar sempre
-RunService.RenderStepped:Connect(updateSkeletons)
+-- Loop de atualização contínua
+local function loopAtualizacao()
+    RunService.RenderStepped:Connect(function()
+        if espAtivado then
+            for _, player in ipairs(Players:GetPlayers()) do
+                aplicarHighlight(player)
+            end
+        else
+            for _, player in ipairs(Players:GetPlayers()) do
+                removerHighlight(player)
+            end
+        end
+    end)
+end
 
--- Atualizar Skeletons quando players entram/saem
-Players.PlayerAdded:Connect(function(playerTarget)
-    if playerTarget ~= player then
-        createSkeleton(playerTarget)
-    end
+-- Monitorar novos jogadores
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function()
+        if espAtivado then
+            aplicarHighlight(player)
+        end
+    end)
 end)
 
-Players.PlayerRemoving:Connect(function(playerTarget)
-    removeSkeleton(playerTarget)
-end)
-
--- Criar Skeletons para jogadores que já estão no jogo
-for _, playerTarget in pairs(Players:GetPlayers()) do
-    if playerTarget ~= player then
-        createSkeleton(playerTarget)
-    end
-end
-
--- Função que será chamada pelo Toggle
-local function toggleSkeleton(Value)
-    espEnabled = Value
-end
-
--- Criar Toggle usando seu sistema
-Tabs.Main:AddToggle("espskeleton", {
-    Title = "ESP Skeleton",
-    Description = "Ativa/desativa Skeleton ESP nos players",
+-- Adicionar Toggle ao menu
+Tabs.Esp:AddToggle("esp_box_transparente", {
+    Title = "ESP Box",
+    Description = "Ativa/Desativa ESP Box",
     Default = false,
-    Callback = toggleSkeleton
+    Callback = function(state)
+        espAtivado = state
+        if state then
+            loopAtualizacao()
+        else
+            for _, player in ipairs(Players:GetPlayers()) do
+                removerHighlight(player)
+            end
+        end
+    end
 })
+ 
+ Tabs.Teleport:AddButton({
+    Title = "Teleport por player",
+    Callback = function()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinity2346/Tect-Menu/main/Teleport%20Gui.lua"))()
+    end
+})
+ 
+ -- parágrafos 
+Tabs.Main:AddParagraph({ Title = "Em breve mais, atualizações." })
 
 Tabs.Exploits:AddButton({
     Title = "Fly car",
@@ -365,9 +315,9 @@ Tabs.Exploits:AddButton({
 })
 
 Tabs.Exploits:AddButton({
-    Title = "Teleport",
+    Title = "Copiar avatar",
     Callback = function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinity2346/Tect-Menu/main/Teleport%20Gui.lua"))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/refs/heads/main/Copy%20Avatar'))()
     end
 })
 
@@ -375,30 +325,6 @@ Tabs.Exploits:AddButton({
     Title = "Grudar portas",
     Callback = function()
         loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Bring-Parts-27586"))()
-    end
-})
-
-Tabs.Exploits:AddButton({
-    Title = "Remover Paredes",
-    Callback = function()
-        -- Serviço necessário
-        local Workspace = game:GetService("Workspace")
-
-        -- Função para remover todas as paredes
-        local function removerParedes()
-            for _, objeto in ipairs(Workspace:GetDescendants()) do
-                if objeto:IsA("BasePart") then
-                    -- Condição para considerar como "parede"
-                    if objeto.Size.X > 5 and objeto.Size.Y > 5 and objeto.Size.Z < 2 then
-                        objeto:Destroy()
-                        print("[Remover Parede] Parede removida:", objeto:GetFullName())
-                    end
-                end
-            end
-        end
-
-        -- Executa a função
-        removerParedes()
     end
 })
 
@@ -412,10 +338,7 @@ Tabs.Settings:AddButton({
 Tabs.Settings:AddButton({
     Title = "SP Hub",
     Callback = function()
-        --[[
-	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
-]]
-loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/refs/heads/main/Brookhaven"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/refs/heads/main/Brookhaven"))()
     end
 })
 
