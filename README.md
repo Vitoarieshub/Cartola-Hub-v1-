@@ -307,6 +307,36 @@ Tabs.Esp:AddToggle("esp_box_transparente", {
  -- parágrafos 
 Tabs.Main:AddParagraph({ Title = "Em breve mais, atualizações." })
 
+Tabs.Teleport:AddButton({
+    Title = "Lobby",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+hrp.CFrame = CFrame.new(2.8888463973999023, 3.2902424335479736, 0.15440566837787628)
+    end
+})
+
+Tabs.Teleport:AddButton({
+    Title = "Hospital",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+hrp.CFrame = CFrame.new(-314.1259460449219, 16.576541900634766, 60.161827087402344)hospital
+    end
+})
+
+Tabs.Teleport:AddButton({
+    Title = "Mountain",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local hrp = char:WaitForChild("HumanoidRootPart")
+hrp.CFrame = CFrame.new(-521.6278076171875, 0.19005724787712097, 910.4871215820312)
+    end
+})
+
 Tabs.Exploits:AddButton({
     Title = "Fly car",
     Callback = function()
