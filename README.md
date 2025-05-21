@@ -1,10 +1,10 @@
--- carregar biblioteca 
+-- Carregar biblioteca Fluent
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
--- aviso ao executar
-Fluent:Notify({ Title = "executado!", Content = "executando com sucesso" })
+-- Aviso ao executar
+Fluent:Notify({ Title = "Executado!", Content = "Executando com sucesso" })
 
-
+-- Criar janela principal
 local Window = Fluent:CreateWindow({
     Title = "Cartola Hub - Brookhaven " .. Fluent.Version,
     TabWidth = 160, 
@@ -12,6 +12,7 @@ local Window = Fluent:CreateWindow({
     Theme = "Dark"
 })
 
+-- Criar abas
 local Tabs = {
     Main = Window:AddTab({ Title = "Main" }),
     Esp = Window:AddTab({ Title = "Esp" }),
@@ -19,15 +20,19 @@ local Tabs = {
     Exploits = Window:AddTab({ Title = "Troll" }),
     Settings = Window:AddTab({ Title = "Scripts" })
 }
--- parágrafos 
+
+-- Parágrafo informativo
 Tabs.Main:AddParagraph({ Title = "Desenvolvedores", Content = "@kwooso4 @Vito0296poq" })
 
--- botões 
-Tabs.Main:AddButton({ Title = "infinite jump", Callback = function() 
-loadstring(game:HttpGet("https://raw.githubusercontent.com/HeyGyt/infjump/main/main"))()
-end })
+-- Botão: Infinite Jump
+Tabs.Main:AddButton({
+    Title = "Infinite Jump",
+    Callback = function() 
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/HeyGyt/infjump/main/main"))()
+    end
+})
 
--- Funções utilitárias
+-- Função utilitária para alterar propriedades do Humanoid
 local function setHumanoidProperty(property, value)
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -36,6 +41,7 @@ local function setHumanoidProperty(property, value)
     print(property .. " ajustado para:", value)
 end
 
+-- Sliders de WalkSpeed e JumpPower
 Tabs.Main:AddSlider("WalkSpeed", {
     Title = "WalkSpeed",
     Description = "Define a velocidade do jogador",
@@ -60,20 +66,18 @@ Tabs.Main:AddSlider("JumpPower", {
     end
 })
 
--- Variável para armazenar o estado do FOV (ativado ou desativado)
+-- Campo de visão (FOV)
 local fovAtivo = false
-local fovPadrao = 70 -- Define o valor padrão do FOV quando desativado
-local fovAtual = 70   -- Valor inicial do FOV ajustável
+local fovPadrao = 70
+local fovAtual = 70
 
--- Criando Slider para ajustar o FOV
 Tabs.Main:AddSlider("FOV", {
     Title = "FOV",
     Description = "Ajusta o campo de visão da câmera",
     Default = fovAtual,
     Min = 30,
-    Max = 120, -- Máximo permitido pelo Roblox
+    Max = 120,
     Rounding = 1,
-
     Callback = function(value)
         fovAtual = value
         if fovAtivo then
@@ -82,181 +86,140 @@ Tabs.Main:AddSlider("FOV", {
     end
 })
 
--- Criando Toggle para ativar/desativar FOV
 Tabs.Main:AddToggle("FOV_Toggle", {
     Title = "FOV",
-    Description = "Ativa ou desativa  campo de visão",
+    Description = "Ativa ou desativa o campo de visão",
     Default = false,
-
     Callback = function(state)
         fovAtivo = state
-        if fovAtivo then
-            game.Workspace.CurrentCamera.FieldOfView = fovAtual -- Aplica o FOV escolhido
-        else
-            game.Workspace.CurrentCamera.FieldOfView = fovPadrao -- Volta ao normal
-        end
+        game.Workspace.CurrentCamera.FieldOfView = fovAtivo and fovAtual or fovPadrao
     end
 })
 
--- Variável para armazenar o estado do ESP
+-- ESP Nome/Distância/HP/Dias
 local espAtivado = false
 local connections = {}
 
 Tabs.Esp:AddToggle("esp_nome_distancia", {
     Title = "ESP Nome",
-    Description = "Ativa/Desativa ESP Nome, HP, Distância e Dias",
+    Description = "Ativa/Desativa ESP com informações",
     Default = false,
     Callback = function(state)
         espAtivado = state
         local Players = game:GetService("Players")
         local LocalPlayer = Players.LocalPlayer
 
-        -- Função para criar o ESP no jogador
         local function criarESP(player)
             if player == LocalPlayer or not espAtivado then return end
 
             local char = player.Character or player.CharacterAdded:Wait()
-            local head = char:FindFirstChild("Head", 5)
+            local head = char:FindFirstChild("Head")
             local humanoid = char:FindFirstChild("Humanoid")
 
             if head and humanoid then
                 local esp = head:FindFirstChild("ESP")
                 if not esp then
-                    esp = Instance.new("BillboardGui")
+                    esp = Instance.new("BillboardGui", head)
                     esp.Name = "ESP"
                     esp.Adornee = head
-                    esp.Size = UDim2.new(0, 200, 0, 50) -- Aumentei o tamanho para caber todas as informações
+                    esp.Size = UDim2.new(0, 200, 0, 50)
                     esp.StudsOffset = Vector3.new(0, -2, 0)
                     esp.AlwaysOnTop = true
 
-                    local text = Instance.new("TextLabel")
+                    local text = Instance.new("TextLabel", esp)
                     text.Size = UDim2.new(1, 0, 1, 0)
                     text.BackgroundTransparency = 1
                     text.TextColor3 = Color3.fromRGB(255, 255, 255)
                     text.TextSize = 14
-                    text.TextScaled = false
                     text.Font = Enum.Font.GothamBold
                     text.TextStrokeTransparency = 0.4
                     text.TextStrokeColor3 = Color3.new(0, 0, 0)
-                    text.Parent = esp
-
-                    esp.Parent = head
                 end
 
-                -- Atualiza o texto para mostrar Nome, HP, Distância e Dias de conta
-                local function atualizarTexto()
-                    while espAtivado and char and char.Parent and head.Parent and humanoid.Health > 0 do
-                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("HumanoidRootPart") then
-                            local distancia = (LocalPlayer.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
-                            local accountAge = player.AccountAge
-                            local vida = math.floor(humanoid.Health)
-
-                            esp.TextLabel.Text = string.format(
-                                "%s - %d HP - %d Studs - %d Dias",
-                                player.Name,
-                                vida,
-                                math.floor(distancia),
-                                accountAge
-                            )
-                        end
+                task.spawn(function()
+                    while espAtivado and char.Parent and humanoid.Health > 0 do
+                        local distancia = (LocalPlayer.Character.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
+                        head.ESP.TextLabel.Text = string.format("%s - %d HP - %d Studs - %d Dias",
+                            player.Name,
+                            math.floor(humanoid.Health),
+                            math.floor(distancia),
+                            player.AccountAge)
                         task.wait(0.5)
                     end
-
-                    if esp then
-                        esp:Destroy()
+                    if head:FindFirstChild("ESP") then
+                        head.ESP:Destroy()
                     end
-                end
+                end)
 
-                -- Inicia a atualização do ESP
-                task.spawn(atualizarTexto)
-
-                -- Remove o ESP quando o jogador morrer
                 humanoid.Died:Connect(function()
-                    if esp then
-                        esp:Destroy()
+                    if head:FindFirstChild("ESP") then
+                        head.ESP:Destroy()
                     end
                 end)
             end
         end
 
-        -- Função para monitorar renascimentos
-        local function monitorarPersonagem(player)
-            if espAtivado then
-                if connections[player] then
-                    connections[player]:Disconnect()
-                end
-
-                connections[player] = player.CharacterAdded:Connect(function()
-                    task.wait(1)
-                    if espAtivado then
-                        criarESP(player)
-                    end
-                end)
+        local function monitorar(player)
+            if connections[player] then
+                connections[player]:Disconnect()
             end
+            connections[player] = player.CharacterAdded:Connect(function()
+                task.wait(1)
+                criarESP(player)
+            end)
         end
 
-        -- Ativar ou desativar o ESP para todos jogadores
         if espAtivado then
             for _, player in ipairs(Players:GetPlayers()) do
                 criarESP(player)
-                monitorarPersonagem(player)
+                monitorar(player)
             end
-
             connections["PlayerAdded"] = Players.PlayerAdded:Connect(function(player)
-                monitorarPersonagem(player)
                 criarESP(player)
+                monitorar(player)
             end)
         else
-            -- Desativa todos os ESPs e desconecta
-            for _, player in ipairs(Players:GetPlayers()) do
-                if connections[player] then
-                    connections[player]:Disconnect()
-                    connections[player] = nil
-                end
+            for _, conn in pairs(connections) do
+                if typeof(conn) == "RBXScriptConnection" then conn:Disconnect() end
             end
-
-            if connections["PlayerAdded"] then
-                connections["PlayerAdded"]:Disconnect()
-                connections["PlayerAdded"] = nil
+            connections = {}
+            for _, player in ipairs(Players:GetPlayers()) do
+                local char = player.Character
+                if char and char:FindFirstChild("Head") and char.Head:FindFirstChild("ESP") then
+                    char.Head.ESP:Destroy()
+                end
             end
         end
     end
 })
 
--- Estado do ESP
-local espAtivado = false
+-- ESP Highlight (Caixa Branca)
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 
--- Função para aplicar o Highlight
 local function aplicarHighlight(player)
     if player == LocalPlayer then return end
-    local character = player.Character
-    if character and not character:FindFirstChild("ESPHighlight") then
-        local highlight = Instance.new("Highlight")
+    local char = player.Character
+    if char and not char:FindFirstChild("ESPHighlight") then
+        local highlight = Instance.new("Highlight", char)
         highlight.Name = "ESPHighlight"
-        highlight.Adornee = character
-        highlight.FillColor = Color3.fromRGB(255, 255, 255) -- Cor branca
-        highlight.FillTransparency = 1 -- Centro totalmente transparente
-        highlight.OutlineColor = Color3.fromRGB(255, 255, 255) -- Cor branca
-        highlight.OutlineTransparency = 0 -- Contorno totalmente opaco
-        highlight.Parent = character
+        highlight.Adornee = char
+        highlight.FillColor = Color3.fromRGB(255, 255, 255)
+        highlight.FillTransparency = 1
+        highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+        highlight.OutlineTransparency = 0
     end
 end
 
--- Função para remover o Highlight
 local function removerHighlight(player)
-    local character = player.Character
-    if character then
-        local highlight = character:FindFirstChild("ESPHighlight")
-        if highlight then
-            highlight:Destroy()
-        end
+    local char = player.Character
+    if char then
+        local highlight = char:FindFirstChild("ESPHighlight")
+        if highlight then highlight:Destroy() end
     end
 end
 
--- Loop de atualização contínua
 local function loopAtualizacao()
     RunService.RenderStepped:Connect(function()
         if espAtivado then
@@ -271,16 +234,12 @@ local function loopAtualizacao()
     end)
 end
 
--- Monitorar novos jogadores
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function()
-        if espAtivado then
-            aplicarHighlight(player)
-        end
+        if espAtivado then aplicarHighlight(player) end
     end)
 end)
 
--- Adicionar Toggle ao menu
 Tabs.Esp:AddToggle("esp_box_transparente", {
     Title = "ESP Box",
     Description = "Ativa/Desativa ESP Box",
@@ -296,47 +255,40 @@ Tabs.Esp:AddToggle("esp_box_transparente", {
         end
     end
 })
- 
- Tabs.Teleport:AddButton({
+
+-- TELEPORTES
+Tabs.Teleport:AddButton({
     Title = "Teleport por player",
     Callback = function()
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Infinity2346/Tect-Menu/main/Teleport%20Gui.lua"))()
     end
 })
- 
- -- parágrafos 
-Tabs.Main:AddParagraph({ Title = "Em breve mais, atualizações." })
 
 Tabs.Teleport:AddButton({
     Title = "Lobby",
     Callback = function()
-        local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-hrp.CFrame = CFrame.new(2.8888463973999023, 3.2902424335479736, 0.15440566837787628)
+        local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = CFrame.new(2.88, 3.29, 0.15)
     end
 })
 
 Tabs.Teleport:AddButton({
     Title = "Hospital",
     Callback = function()
-        local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-hrp.CFrame = CFrame.new(-314.1259460449219, 16.576541900634766, 60.161827087402344)hospital
+        local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = CFrame.new(-314.12, 16.57, 60.16)
     end
 })
 
 Tabs.Teleport:AddButton({
     Title = "Mountain",
     Callback = function()
-        local player = game.Players.LocalPlayer
-local char = player.Character or player.CharacterAdded:Wait()
-local hrp = char:WaitForChild("HumanoidRootPart")
-hrp.CFrame = CFrame.new(-521.6278076171875, 0.19005724787712097, 910.4871215820312)
+        local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
+        hrp.CFrame = CFrame.new(-521.62, 0.19, 910.48)
     end
 })
 
+-- EXPLOITS
 Tabs.Exploits:AddButton({
     Title = "Fly car",
     Callback = function()
@@ -358,6 +310,7 @@ Tabs.Exploits:AddButton({
     end
 })
 
+-- SCRIPTS EXTERNOS
 Tabs.Settings:AddButton({
     Title = "Real hub",
     Callback = function()
@@ -392,3 +345,6 @@ Tabs.Settings:AddButton({
         loadstring(game:HttpGet("https://raw.githubusercontent.com/H20CalibreYT/SystemBroken/main/script"))()
     end
 })
+
+-- Mensagem final
+Tabs.Main:AddParagraph({ Title = "Em breve mais, atualizações." })
