@@ -192,83 +192,93 @@ local Players = game:GetService("Players")
 
 local Workspace = game:GetService("Workspace")
 
+local RunService = game:GetService("RunService")
+
 
 
 local LocalPlayer = Players.LocalPlayer
 
 local Camera = Workspace.CurrentCamera
 
+
+
 local selectedPlayer = nil
 
+local flingConnection = nil
+
+local flingActive = false
+
+local orbitRadius = 5
+
+local orbitSpeed = 10
+
+local angle = 0
 
 
--- Função para obter nomes de jogadores (exceto o local)
+
+-- Obter lista de jogadores
 
 local function getPlayerNames()
 
-    local names = {}
+	local names = {}
 
-    for _, player in ipairs(Players:GetPlayers()) do
+	for _, player in ipairs(Players:GetPlayers()) do
 
-        if player ~= LocalPlayer then
+		if player ~= LocalPlayer then
 
-            table.insert(names, player.Name)
+			table.insert(names, player.Name)
 
-        end
+		end
 
-    end
+	end
 
-    return names
+	return names
 
 end
 
 
 
--- Criar dropdown
+-- Dropdown
 
 local playerDropdown = TabPlayer:AddDropdown({
 
-    Name = "Select player",
+	Name = "Select player",
 
-    Default = "",
+	Default = "",
 
-    Options = getPlayerNames(),
+	Options = getPlayerNames(),
 
-    Callback = function(Value)
+	Callback = function(Value)
 
-        selectedPlayer = Players:FindFirstChild(Value)
+		selectedPlayer = Players:FindFirstChild(Value)
 
-    end
+	end
 
 })
 
 
 
--- Atualiza o dropdown dinamicamente
+-- Atualizar lista
 
 local function updateDropdown()
 
-    local names = getPlayerNames()
-
-    playerDropdown:Refresh(names, true) -- atualiza as opções e reseta o valor selecionado
+	playerDropdown:Refresh(getPlayerNames(), true)
 
 end
 
 
 
--- Eventos para detectar entrada e saída de jogadores
-
 Players.PlayerAdded:Connect(updateDropdown)
 
 Players.PlayerRemoving:Connect(function(leavingPlayer)
 
-    if selectedPlayer == leavingPlayer then
+	if selectedPlayer == leavingPlayer then
 
-        selectedPlayer = nil
+		selectedPlayer = nil
 
-    end
+	end
 
-    updateDropdown()
+	updateDropdown()
 
 end)
 
@@ -278,285 +288,177 @@ end)
 
 TabPlayer:AddToggle({
 
-    Name = "View Player",
+	Name = "View Player",
 
-    Default = false,
+	Default = false,
 
-    Callback = function(Value)
+	Callback = function(Value)
 
-        if Value and selectedPlayer and selectedPlayer.Character then
+		local target = Value and selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChildOfClass("Humanoid")
 
-            local humanoid = selectedPlayer.Character:FindFirstChildOfClass("Humanoid")
+		local myHumanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
 
-            if humanoid then
+		Camera.CameraSubject = target or myHumanoid or Camera.CameraSubject
 
-                Camera.CameraSubject = humanoid
-
-            end
-
-        else
-
-            local myHumanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-
-            if myHumanoid then
-
-                Camera.CameraSubject = myHumanoid
-
-            end
-
-        end
-
-    end
+	end
 
 })
 
 
 
--- Teleportar até o jogador
+-- Teleportar até jogador
 
 TabPlayer:AddButton({
 
-    Name = "Teleport on Player",
+	Name = "Teleport on Player",
 
-    Callback = function()
+	Callback = function()
 
-        if selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
+		if selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart") then
 
-            local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+			local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
-            if hrp then
+			if myHRP then
 
-                hrp.CFrame = selectedPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
+				myHRP.CFrame = selectedPlayer.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
 
-            end
+			end
 
-        end
+		end
 
-    end
-
-})
-
-
-
-
-
-local Players = game:GetService("Players")
-
-
-
-local Workspace = game:GetService("Workspace")
-
-
-
-local RunService = game:GetService("RunService")
-
-
-
-local LocalPlayer = Players.LocalPlayer
-
-local selectedPlayer = nil
-
-local flingActive = false
-
-local flingConnection = nil
-
-local orbitRadius = 3
-
-local orbitSpeed = 5
-
-local angle = 0
-
-
-
--- Função para listar jogadores (exceto o próprio)
-
-local function getPlayerNames()
-
-    local names = {}
-
-    for _, player in ipairs(Players:GetPlayers()) do
-
-        if player ~= LocalPlayer then
-
-            table.insert(names, player.Name)
-
-        end
-
-    end
-
-    return names
-
-end
-
-
-
--- Dropdown dinâmico
-
-local playerDropdown = TabPlayer:AddDropdown({
-
-    Name = "Select Player",
-
-    Default = "",
-
-    Options = getPlayerNames(),
-
-    Callback = function(value)
-
-        selectedPlayer = Players:FindFirstChild(value)
-
-    end
+	end
 
 })
 
 
 
--- Atualiza quando jogadores entram/saem
+-- FLING
 
-local function updateDropdown()
+local function setupFling()
 
-    local names = getPlayerNames()
+	if not (selectedPlayer and selectedPlayer.Character and LocalPlayer.Character) then return end
 
-    playerDropdown:Refresh(names, true)
+
+
+	local myHRP = LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+	local targetHRP = selectedPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+	if not (myHRP and targetHRP) then return end
+
+
+
+	myHRP.Anchored = false
+
+	angle = 0
+
+
+
+	if flingConnection then flingConnection:Disconnect() end
+
+
+
+	flingConnection = RunService.Heartbeat:Connect(function(dt)
+
+		if not (selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart")) then return end
+
+		targetHRP = selectedPlayer.Character.HumanoidRootPart
+
+
+
+		local offset = Vector3.new(math.cos(angle), 0.5, math.sin(angle)) * orbitRadius
+
+		angle += orbitSpeed * dt
+
+
+
+		myHRP.CFrame = CFrame.new(targetHRP.Position + offset, targetHRP.Position)
+
+		myHRP.RotVelocity = Vector3.new(9999, 9999, 9999)
+
+	end)
 
 end
 
 
-
-Players.PlayerAdded:Connect(updateDropdown)
-
-Players.PlayerRemoving:Connect(function(p)
-
-    if selectedPlayer == p then
-
-        selectedPlayer = nil
-
-    end
-
-    updateDropdown()
-
-end)
-
-
-
--- Ativar FLING girando em volta
 
 local function startFling()
 
-    if not selectedPlayer then return end
+	setupFling()
 
 
 
-    local myChar = LocalPlayer.Character
+	LocalPlayer.CharacterAdded:Connect(function()
 
-    local targetChar = selectedPlayer.Character
+		if flingActive then wait(1) setupFling() end
 
-    if not (myChar and targetChar) then return end
-
-
-
-    local hrp = myChar:FindFirstChild("HumanoidRootPart")
-
-    local targetHRP = targetChar:FindFirstChild("HumanoidRootPart")
-
-    if not (hrp and targetHRP) then return end
+	end)
 
 
 
-    hrp.Anchored = false
+	if selectedPlayer then
 
-    angle = 0
+		selectedPlayer.CharacterAdded:Connect(function()
 
+			if flingActive then wait(1) setupFling() end
 
+		end)
 
-    flingConnection = RunService.Heartbeat:Connect(function(dt)
-
-        if not (selectedPlayer and selectedPlayer.Character and selectedPlayer.Character:FindFirstChild("HumanoidRootPart")) then
-
-            return
-
-        end
-
-
-
-        -- Calcular posição em volta do jogador
-
-        angle += orbitSpeed * dt
-
-        local offsetX = math.cos(angle) * orbitRadius
-
-        local offsetZ = math.sin(angle) * orbitRadius
-
-        local targetPos = targetHRP.Position + Vector3.new(offsetX, 0.5, offsetZ)
-
-
-
-        hrp.CFrame = CFrame.new(targetPos, targetHRP.Position)
-
-        hrp.RotVelocity = Vector3.new(9999, 9999, 9999)
-
-    end)
+	end
 
 end
 
 
-
--- Parar FLING
 
 local function stopFling()
 
-    flingActive = false
+	flingActive = false
 
-    if flingConnection then
+	if flingConnection then
 
-        flingConnection:Disconnect()
+		flingConnection:Disconnect()
 
-        flingConnection = nil
+		flingConnection = nil
 
-    end
+	end
 
+	local myHRP = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
 
+	if myHRP then
 
-    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+		myHRP.RotVelocity = Vector3.zero
 
-    if hrp then
+		myHRP.AssemblyLinearVelocity = Vector3.zero
 
-        hrp.RotVelocity = Vector3.zero
-
-        hrp.AssemblyLinearVelocity = Vector3.zero
-
-    end
+	end
 
 end
 
 
 
--- Botão para alternar FLING
+-- Botão de Fling
 
 TabPlayer:AddButton({
 
-    Name = "Fling",
+	Name = "Fling (Beta)",
 
-    Callback = function()
+	Callback = function()
 
-        flingActive = not flingActive
+		flingActive = not flingActive
 
-        if flingActive then
+		if flingActive then
 
-            startFling()
+			startFling()
 
-        else
+		else
 
-            stopFling()
+			stopFling()
 
-        end
+		end
 
-    end
+	end
 
 })
-
-
-
-
 
 
 
@@ -578,27 +480,21 @@ TabPlayer:AddButton({
 
 
 
--- Player Tab
-
-local TabAnti = Window:MakeTab({
 
 
-
-    Name = "Anti Troll",
-
-    Icon = "rbxassetid://4483345998",
-
-    PremiumOnly = false
-
-})
+TabPlayer:AddParagraph("Anti Sit Modes", "")
 
 
 
 local Players = game:GetService("Players")
 
+local Workspace = game:GetService("Workspace")
+
+local RunService = game:GetService("RunService")
+
+
+
 local LocalPlayer = Players.LocalPlayer
-
-
 
 local antiVehicleSeatEnabled = false
 
@@ -606,7 +502,63 @@ local seatConnections = {}
 
 
 
-TabAnti:AddToggle({
+local function isVehicleSeat(part)
+
+    return part and part:IsA("VehicleSeat")
+
+end
+
+
+
+local function repelFromSeat(seat)
+
+    local char = LocalPlayer.Character
+
+    if not char then return end
+
+
+
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+
+    if not hrp then return end
+
+
+
+    local direction = (hrp.Position - seat.Position).Unit
+
+    hrp.Velocity = direction * 100
+
+end
+
+
+
+local function protectCharacter(character)
+
+    local humanoidRoot = character:WaitForChild("HumanoidRootPart", 5)
+
+    if not humanoidRoot then return end
+
+
+
+    local touchConn = humanoidRoot.Touched:Connect(function(hit)
+
+        if antiVehicleSeatEnabled and isVehicleSeat(hit) then
+
+            repelFromSeat(hit)
+
+        end
+
+    end)
+
+
+
+    table.insert(seatConnections, touchConn)
+
+end
+
+
+
+TabPlayer:AddToggle({
 
     Name = "Anti Vehicle",
 
@@ -618,7 +570,7 @@ TabAnti:AddToggle({
 
 
 
-        -- Limpa conexões anteriores
+        -- Desconecta conexões anteriores
 
         for _, conn in ipairs(seatConnections) do
 
@@ -632,31 +584,11 @@ TabAnti:AddToggle({
 
         if Value then
 
-            local function monitorCharacter(character)
-
-                local humanoid = character:WaitForChild("Humanoid")
-
-                local conn = humanoid.Seated:Connect(function(isSeated, seat)
-
-                    if isSeated and seat and seat:IsA("VehicleSeat") and antiVehicleSeatEnabled then
-
-                        humanoid.Sit = false
-
-                    end
-
-                end)
-
-                table.insert(seatConnections, conn)
-
-            end
-
-
-
-            -- Proteger o personagem atual
+            -- Proteger personagem atual
 
             if LocalPlayer.Character then
 
-                monitorCharacter(LocalPlayer.Character)
+                protectCharacter(LocalPlayer.Character)
 
             end
 
@@ -666,7 +598,7 @@ TabAnti:AddToggle({
 
             local charConn = LocalPlayer.CharacterAdded:Connect(function(character)
 
-                monitorCharacter(character)
+                protectCharacter(character)
 
             end)
 
@@ -680,13 +612,15 @@ TabAnti:AddToggle({
 
 
 
+
+
 local antiSeatEnabled = false
 
 local seatConnection = nil
 
 
 
-TabAnti:AddToggle({
+TabPlayer:AddToggle({
 
     Name = "Anti Sit",
 
