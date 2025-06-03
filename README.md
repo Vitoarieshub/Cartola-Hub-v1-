@@ -480,79 +480,53 @@ TabPlayer:AddButton({
 
 
 
-
-
-TabPlayer:AddParagraph("Anti Sit Modes", "")
-
-
-
 local Players = game:GetService("Players")
-
-local Workspace = game:GetService("Workspace")
-
-local RunService = game:GetService("RunService")
-
-
 
 local LocalPlayer = Players.LocalPlayer
 
+
+
 local antiVehicleSeatEnabled = false
 
-local seatConnections = {}
+local characterConnection = nil
+
+local seatedConnection = nil
 
 
 
-local function isVehicleSeat(part)
+local function setupAntiVehicleSeat(character)
 
-    return part and part:IsA("VehicleSeat")
+    local humanoid = character:WaitForChild("Humanoid", 5)
 
-end
+    if humanoid then
 
+        if seatedConnection then
 
-
-local function repelFromSeat(seat)
-
-    local char = LocalPlayer.Character
-
-    if not char then return end
-
-
-
-    local hrp = char:FindFirstChild("HumanoidRootPart")
-
-    if not hrp then return end
-
-
-
-    local direction = (hrp.Position - seat.Position).Unit
-
-    hrp.Velocity = direction * 100
-
-end
-
-
-
-local function protectCharacter(character)
-
-    local humanoidRoot = character:WaitForChild("HumanoidRootPart", 5)
-
-    if not humanoidRoot then return end
-
-
-
-    local touchConn = humanoidRoot.Touched:Connect(function(hit)
-
-        if antiVehicleSeatEnabled and isVehicleSeat(hit) then
-
-            repelFromSeat(hit)
+            seatedConnection:Disconnect()
 
         end
 
-    end)
+        seatedConnection = humanoid.Seated:Connect(function(isSeated, seat)
 
+            if isSeated and antiVehicleSeatEnabled and seat and seat:IsA("VehicleSeat") then
 
+                humanoid.Sit = false
 
-    table.insert(seatConnections, touchConn)
+                -- Tenta mover o jogador levemente para evitar travamento
+
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+
+                if hrp then
+
+                    hrp.CFrame = hrp.CFrame + Vector3.new(0, 5, 0)
+
+                end
+
+            end
+
+        end)
+
+    end
 
 end
 
@@ -570,47 +544,53 @@ TabPlayer:AddToggle({
 
 
 
-        -- Desconecta conexões anteriores
+        if antiVehicleSeatEnabled then
 
-        for _, conn in ipairs(seatConnections) do
+            if characterConnection then
 
-            if conn then conn:Disconnect() end
-
-        end
-
-        table.clear(seatConnections)
-
-
-
-        if Value then
-
-            -- Proteger personagem atual
-
-            if LocalPlayer.Character then
-
-                protectCharacter(LocalPlayer.Character)
+                characterConnection:Disconnect()
 
             end
 
 
 
-            -- Proteger futuros personagens
+            characterConnection = LocalPlayer.CharacterAdded:Connect(function(character)
 
-            local charConn = LocalPlayer.CharacterAdded:Connect(function(character)
-
-                protectCharacter(character)
+                setupAntiVehicleSeat(character)
 
             end)
 
-            table.insert(seatConnections, charConn)
+
+
+            if LocalPlayer.Character then
+
+                setupAntiVehicleSeat(LocalPlayer.Character)
+
+            end
+
+        else
+
+            if characterConnection then
+
+                characterConnection:Disconnect()
+
+                characterConnection = nil
+
+            end
+
+            if seatedConnection then
+
+                seatedConnection:Disconnect()
+
+                seatedConnection = nil
+
+            end
 
         end
 
     end
 
 })
-
-
 
 
 
