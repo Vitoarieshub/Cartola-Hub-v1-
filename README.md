@@ -578,7 +578,19 @@ TabPlayer:AddButton({
 
 
 
-TabPlayer:AddParagraph("Anti Seat", " ")
+-- Player Tab
+
+local TabAnti = Window:MakeTab({
+
+
+
+    Name = "Anti Troll",
+
+    Icon = "rbxassetid://4483345998",
+
+    PremiumOnly = false
+
+})
 
 
 
@@ -594,7 +606,7 @@ local seatConnections = {}
 
 
 
-TabPlayer:AddToggle({
+TabAnti:AddToggle({
 
     Name = "Anti Vehicle",
 
@@ -674,7 +686,7 @@ local seatConnection = nil
 
 
 
-TabPlayer:AddToggle({
+TabAnti:AddToggle({
 
     Name = "Anti Sit",
 
@@ -741,128 +753,6 @@ TabPlayer:AddToggle({
         end
 
     end
-
-})
-
-
-
-local Players = game:GetService("Players")
-
-local LocalPlayer = Players.LocalPlayer
-
-
-
-local antiSeatEnabled = false
-
-local charConnections = {}
-
-
-
-local function disconnectAll()
-
-	for _, conn in ipairs(charConnections) do
-
-		if conn then conn:Disconnect() end
-
-	end
-
-	table.clear(charConnections)
-
-end
-
-
-
-local function forceUpright(humanoid)
-
-	if humanoid.Sit then
-
-		humanoid.Sit = false
-
-	end
-
-	humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
-
-end
-
-
-
-local function monitorHumanoid(humanoid)
-
-	-- Corrige imediatamente se já estiver sentado
-
-	forceUpright(humanoid)
-
-
-
-	-- Monitora tentativas futuras de sentar
-
-	table.insert(charConnections, humanoid:GetPropertyChangedSignal("Sit"):Connect(function()
-
-		if humanoid.Sit and antiSeatEnabled then
-
-			forceUpright(humanoid)
-
-		end
-
-	end))
-
-
-
-	table.insert(charConnections, humanoid.Seated:Connect(function(isSeated)
-
-		if isSeated and antiSeatEnabled then
-
-			forceUpright(humanoid)
-
-		end
-
-	end))
-
-end
-
-
-
-local function onCharacterAdded(character)
-
-	local humanoid = character:WaitForChild("Humanoid", 5)
-
-	if humanoid and antiSeatEnabled then
-
-		monitorHumanoid(humanoid)
-
-	end
-
-end
-
-
-
-TabPlayer:AddToggle({
-
-	Name = "Anti Sit v2",
-
-	Default = false,
-
-	Callback = function(state)
-
-		antiSeatEnabled = state
-
-		disconnectAll()
-
-
-
-		if state then
-
-			if LocalPlayer.Character then
-
-				onCharacterAdded(LocalPlayer.Character)
-
-			end
-
-			table.insert(charConnections, LocalPlayer.CharacterAdded:Connect(onCharacterAdded))
-
-		end
-
-	end
 
 })
 
