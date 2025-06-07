@@ -478,7 +478,7 @@ TabPlayer:AddButton({
 
 })
 
-
+TabPlayer:AddParagraph("Anti", "Trool")
 
 local Players = game:GetService("Players")
 
