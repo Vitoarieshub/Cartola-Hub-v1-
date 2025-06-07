@@ -480,7 +480,7 @@ TabPlayer:AddButton({
 
 
 
-TabMain:AddParagraph("Anti Troll", "")
+TabPlayer:AddParagraph("Anti Troll", "")
 
 
 
