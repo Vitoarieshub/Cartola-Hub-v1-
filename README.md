@@ -174,6 +174,93 @@ TabMain:AddTextbox({
 
 
 
+local Lighting = game:GetService("Lighting")
+
+-- Armazena configurações originais
+local originalSettings = {
+	Brightness = Lighting.Brightness,
+	Ambient = Lighting.Ambient,
+	OutdoorAmbient = Lighting.OutdoorAmbient,
+	ClockTime = Lighting.ClockTime,
+	FogEnd = Lighting.FogEnd,
+	GlobalShadows = Lighting.GlobalShadows
+}
+
+local fullBrightEnabled = false
+local connections = {}
+
+-- Ativa o modo manhã com iluminação suave
+local function enableMorningLight()
+	fullBrightEnabled = true
+
+	Lighting.Brightness = 1.5
+	Lighting.Ambient = Color3.fromRGB(180, 180, 160)
+	Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 170)
+	Lighting.ClockTime = 7
+	Lighting.FogEnd = 1e9
+	Lighting.GlobalShadows = true
+
+	-- Protege as propriedades contra mudanças externas
+	table.insert(connections, Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+		if fullBrightEnabled then Lighting.ClockTime = 7 end
+	end))
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("Ambient"):Connect(function()
+		if fullBrightEnabled then Lighting.Ambient = Color3.fromRGB(180, 180, 160) end
+	end))
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("OutdoorAmbient"):Connect(function()
+		if fullBrightEnabled then Lighting.OutdoorAmbient = Color3.fromRGB(200, 200, 170) end
+	end))
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("Brightness"):Connect(function()
+		if fullBrightEnabled then Lighting.Brightness = 1.5 end
+	end))
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("GlobalShadows"):Connect(function()
+		if fullBrightEnabled then Lighting.GlobalShadows = true end
+	end))
+
+	table.insert(connections, Lighting:GetPropertyChangedSignal("FogEnd"):Connect(function()
+		if fullBrightEnabled then Lighting.FogEnd = 1e9 end
+	end))
+
+	print(" ativada.")
+end
+
+-- Restaura os valores originais
+local function disableMorningLight()
+	fullBrightEnabled = false
+
+	for _, conn in ipairs(connections) do
+		if conn.Disconnect then
+			conn:Disconnect()
+		end
+	end
+	connections = {}
+
+	for prop, value in pairs(originalSettings) do
+		Lighting[prop] = value
+	end
+
+	print(" restaurada.")
+end
+
+-- Toggle no TabMain
+TabMain:AddToggle({
+	Name = "Lighting",
+	Default = false,
+	Callback = function(Value)
+		if Value then
+			enableMorningLight()
+		else
+			disableMorningLight()
+		end
+	end
+})
+
+
+
 -- Player Tab
 
 local TabPlayer = Window:MakeTab({
