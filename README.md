@@ -248,7 +248,7 @@ end
 
 -- Toggle no TabMain
 TabMain:AddToggle({
-	Name = "Lighting",
+	Name = "From Tomorrow",
 	Default = false,
 	Callback = function(Value)
 		if Value then
