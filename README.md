@@ -1188,18 +1188,6 @@ TabScripts:AddButton({
 
 
 
-TabScripts:AddButton({
-
-    Name = "Infinite yield",
-
-    Callback = function()
-
-        loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
-
-    end
-    
-
-
 -- Init UI
 
 OrionLib:Init()
