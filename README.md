@@ -457,6 +457,7 @@ TabPlayer:AddButton({
 })
 
 
+TabPlayer:AddParagraph("Troll", "")
 
 -- FLING
 
@@ -606,7 +607,7 @@ TabPlayer:AddButton({
 
 
 
-TabPlayer:AddParagraph("Anti Troll", "")
+TabPlayer:AddParagraph("Misc", "")
 
 
 
@@ -1188,6 +1189,18 @@ TabScripts:AddButton({
 
 })
 
+
+
+TabScripts:AddButton({
+
+    Name = "Infinite yield",
+
+    Callback = function()
+
+        loadstring(game:HttpGet(('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'),true))()
+
+    end
+    
 
 
 -- Init UI
