@@ -456,9 +456,6 @@ TabPlayer:AddButton({
 
 })
 
-
-
-
 -- FLING
 
 local function setupFling()
