@@ -457,7 +457,7 @@ TabPlayer:AddButton({
 })
 
 
-TabPlayer:AddParagraph("Troll", "")
+
 
 -- FLING
 
