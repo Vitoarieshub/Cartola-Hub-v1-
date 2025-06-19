@@ -19,21 +19,6 @@ local Window = OrionLib:MakeWindow({
 })
 
 
-
--- Main Tab
-
-local TabMain = Window:MakeTab({
-
-    Name = "Main",
-
-    Icon = "rbxassetid://4483345998",
-
-    PremiumOnly = false
-
-})
-
-
-
 OrionLib:MakeNotification({
 
     Name = "Cartola Hub!",
@@ -48,7 +33,38 @@ OrionLib:MakeNotification({
 
 
 
-TabMain:AddParagraph("Developers", "kwooso4 Vito0296poq FHDYRUTF")
+-- CreditsTab
+
+local TabCredits = Window:MakeTab({
+
+    Name = "Credits",
+
+    Icon = "rbxassetid://4483345998",
+
+    PremiumOnly = false
+
+})
+
+
+TabCredits:AddParagraph("Developers", "kwooso4 Vito0296poq FHDYRUTF")
+
+
+TabCredits:AddParagraph("Admin", "Tanjiro_kamado7Wk")
+
+
+
+-- Main Tab
+
+local TabMain = Window:MakeTab({
+
+    Name = "Main",
+
+    Icon = "rbxassetid://4483345998",
+
+    PremiumOnly = false
+
+})
+
 
 
 TabMain:AddButton({
