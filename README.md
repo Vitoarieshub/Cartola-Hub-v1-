@@ -263,9 +263,10 @@ TabMain:AddTextbox({
 
 
 
--- Main Tab
 
-local TabMain = Window:MakeTab({
+-- Houses Tab
+
+local TabHouses = Window:MakeTab({
 
     Name = "Houses",
 
