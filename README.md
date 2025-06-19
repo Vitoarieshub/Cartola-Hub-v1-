@@ -358,6 +358,45 @@ TabHouses:AddButton({
 
 
 
+local atravesarPortasAtivo = false
+local portasOriginais = {}
+
+-- Função para ativar colisão falsa (atravessar)
+local function ativarAtravessarPortas()
+	atravesarPortasAtivo = true
+	portasOriginais = {}
+
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if obj:IsA("BasePart") and obj.Name:lower():match("door") then
+			table.insert(portasOriginais, {part = obj, canCollide = obj.CanCollide})
+			obj.CanCollide = false
+		end
+	end
+end
+
+-- Função para restaurar colisão
+local function desativarAtravessarPortas()
+	atravesarPortasAtivo = false
+	for _, data in ipairs(portasOriginais) do
+		if data.part and data.part:IsDescendantOf(workspace) then
+			data.part.CanCollide = data.canCollide
+		end
+	end
+	portasOriginais = {}
+end
+
+-- Toggle no TabMain
+TabHouses:AddToggle({
+	Name = "Go Through Doors",
+	Default = false,
+	Callback = function(Value)
+		if Value then
+			ativarAtravessarPortas()
+		else
+			desativarAtravessarPortas()
+		end
+	end
+})
 
 
 -- Player Tab
