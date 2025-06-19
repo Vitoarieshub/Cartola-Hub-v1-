@@ -51,6 +51,18 @@ OrionLib:MakeNotification({
 TabMain:AddParagraph("Developers", "kwooso4 Vito0296poq FHDYRUTF")
 
 
+TabMain:AddButton({
+
+    Name = "Fly Cartola",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Fly-Cartola-Hub-/refs/heads/main/README.md"))()
+        
+    end
+
+})
+
 
 
 local Lighting = game:GetService("Lighting")
