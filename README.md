@@ -54,7 +54,7 @@ TabCredits:AddParagraph("Ó Cartola Hub v3 foi encerrado", "ó Novo Hub vai vim"
 TabCredits:AddParagraph("the Cartola Hub v3 was closed", "Oh New Hub is coming")
 
 
-TabMain:AddButton({
+TabCredits:AddButton({
 
     Name = "Cartola Hub teste",
 
