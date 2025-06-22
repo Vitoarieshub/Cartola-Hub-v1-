@@ -306,43 +306,6 @@ local TabHouses = Window:MakeTab({
 
 })
 
--- Botão para remover ban em Brookhaven
-TabHouses:AddButton({
-    Name = "Remove Ban Automatically",
-    Callback = function()
-
-        local Players = game:GetService("Players")
-        local LocalPlayer = Players.LocalPlayer
-        local Workspace = game:GetService("Workspace")
-
-        -- Função para identificar ban
-        local function isBanWall(part)
-            return part:IsA("BasePart")
-                and part.Transparency == 1
-                and part.Color == Color3.fromRGB(255, 0, 0)
-                and part.CanCollide == true
-                and part.Size.Magnitude > 10 -- normalmente são grandes
-        end
-
-        -- Remove barreiras de ban já existentes
-        for _, part in pairs(Workspace:GetDescendants()) do
-            if isBanWall(part) then
-                part:Destroy()
-            end
-        end
-
-        -- Monitora novas barreiras que surgirem no mapa
-        Workspace.DescendantAdded:Connect(function(descendant)
-            if isBanWall(descendant) then
-                task.wait(0.1)
-                descendant:Destroy()
-            end
-        end)
-
-        print(" Remover Ban ativado – serão removidas automaticamente.")
-    end
-})
-
 
 -- Botão para remover ban manualmente em Brookhaven
 TabHouses:AddButton({
