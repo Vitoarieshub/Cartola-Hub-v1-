@@ -54,6 +54,19 @@ TabCredits:AddParagraph("Ó Cartola Hub v3 foi encerrado", "ó Novo Hub vai vim"
 TabCredits:AddParagraph("the Cartola Hub v3 was closed", "Oh New Hub is coming")
 
 
+TabMain:AddButton({
+
+    Name = "Cartola Hub teste",
+
+    Callback = function()
+
+        
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Cartola-Hub-Brookhaven-/refs/heads/main/Cartola.txt"))()
+        
+    end
+
+})
+
 
 -- Main Tab
 
