@@ -852,6 +852,18 @@ local TabScripts = Window:MakeTab({
 })
 
 
+TabScripts:AddButton({
+
+    Name = "Coquette hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Daivd977/Deivd999/refs/heads/main/pessal"))()
+
+    end
+
+})
+
 
 TabScripts:AddButton({
 
