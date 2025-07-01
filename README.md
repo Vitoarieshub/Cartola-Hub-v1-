@@ -50,9 +50,6 @@ TabCredits:AddParagraph("Developers", "kwooso4 Vito0296poq FHDYRUTF")
 
 TabCredits:AddParagraph("Admin", "Tanjiro_kamado7Wk")
 
-TabCredits:AddParagraph("Ó Cartola Hub v3 foi encerrado", "ó Novo Hub vai vim")
-TabCredits:AddParagraph("the Cartola Hub v3 was closed", "Oh New Hub is coming")
-
 
 TabCredits:AddButton({
 
