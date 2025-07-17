@@ -25,7 +25,7 @@ OrionLib:MakeNotification({
 
     Content = "Script loader successful!",
 
-    Image = "rbxassetid://4483345998",
+    Image = "rbxassetid://130563590371769",
 
     Time = 5
 
@@ -39,7 +39,7 @@ local TabCredits = Window:MakeTab({
 
     Name = "Credits",
 
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://130563590371769",
 
     PremiumOnly = false
 
@@ -71,7 +71,7 @@ local TabMain = Window:MakeTab({
 
     Name = "Main",
 
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://130563590371769",
 
     PremiumOnly = false
 
@@ -307,7 +307,7 @@ local TabPlayer = Window:MakeTab({
 
     Name = "Player",
 
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://130563590371769",
 
     PremiumOnly = false
 
@@ -685,7 +685,7 @@ local TabTeleport = Window:MakeTab({
 
     Name = "Teleport",
 
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://130563590371769",
 
     PremiumOnly = false
 
@@ -754,7 +754,7 @@ local TabScripts = Window:MakeTab({
 
     Name = "Scripts",
 
-    Icon = "rbxassetid://4483345998",
+    Icon = "rbxassetid://130563590371769",
 
     PremiumOnly = false
 
