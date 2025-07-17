@@ -848,6 +848,8 @@ local TabScripts = Window:MakeTab({
 
 })
 
+TabScripts:AddParagraph("Brookhaven", "")
+
 
 TabScripts:AddButton({
 
