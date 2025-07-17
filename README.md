@@ -832,7 +832,7 @@ TabScripts:AddParagraph("Universal", "")
 
 TabScripts:AddButton({
 
-    Name = "GhostHub",
+    Name = "Ghost Hub",
 
     Callback = function()
 
