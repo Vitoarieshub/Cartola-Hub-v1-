@@ -913,6 +913,35 @@ TabScripts:AddButton({
 })
 
 
+TabScripts:AddParagraph("Universal", "")
+
+
+TabScripts:AddButton({
+
+    Name = "GhostHub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/GhostHub'))()
+
+    end
+
+})
+
+
+TabScripts:AddButton({
+
+    Name = "Dragon Menu",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Script-/refs/heads/main/main.lua"))()
+
+    end
+
+})
+
+
 
 -- Init UI
 
