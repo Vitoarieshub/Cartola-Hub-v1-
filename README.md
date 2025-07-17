@@ -856,6 +856,19 @@ TabScripts:AddButton({
 })
 
 
+TabScripts:AddButton({
+
+    Name = "YARHM Menu",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/yarhm.lua", false))()
+
+    end
+
+})
+
+
 
 -- Init UI
 
