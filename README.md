@@ -765,7 +765,7 @@ TabScripts:AddParagraph("Brookhaven", "")
 
 TabScripts:AddButton({
 
-    Name = "Coquette hub",
+    Name = "Coquette Hub",
 
     Callback = function()
 
@@ -774,6 +774,32 @@ TabScripts:AddButton({
     end
 
 })
+
+
+TabScripts:AddButton({
+
+    Name = "Bruxus Hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Lindao10/BRUXUS-HUB/refs/heads/main/BRUXUS%20HUB.LUA"))()
+
+    end
+
+})
+
+
+
+TabScripts:AddButton({
+    Name = "Gumball Hub",
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/JaozinScripts/Gumball-Hub/refs/heads/main/GumballHubRetorn2.1.1.1.lua"))()
+
+    end
+
+})
+
 
 
 TabScripts:AddButton({
@@ -788,16 +814,6 @@ TabScripts:AddButton({
 
 })
 
-
-TabScripts:AddButton({
-    Name = "Gumball Hub",
-    Callback = function()
-
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/JaozinScripts/Gumball-Hub/refs/heads/main/GumballHubRetorn2.1.1.1.lua"))()
-
-    end
-
-})
 
 
 TabScripts:AddButton({
