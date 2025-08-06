@@ -765,6 +765,20 @@ TabScripts:AddParagraph("Brookhaven", "")
 
 TabScripts:AddButton({
 
+    Name = "Brutus Hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/codenixstudios/brutus-hub/script/Games/brookhaven.lua"))()
+        
+    end
+
+})
+
+
+
+TabScripts:AddButton({
+
     Name = "Coquette Hub",
 
     Callback = function()
@@ -774,6 +788,21 @@ TabScripts:AddButton({
     end
 
 })
+
+
+
+TabScripts:AddButton({
+
+    Name = "MokurenX",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://safetycode-free.vercel.app/api/run?uid=sOVADqgSEOWfKJeo23vm"))()
+
+    end
+
+})
+
 
 
 TabScripts:AddButton({
