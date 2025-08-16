@@ -8,7 +8,7 @@ local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/Snxd
 
 local Window = OrionLib:MakeWindow({
 
-    Name = "Cartola Hub Version - 3.2",
+    Name = "Cartola Hub Brookhaven Version - 3.2",
 
     HidePremium = false,
 
@@ -746,6 +746,21 @@ TabTeleport:AddButton({
     end
 
 })
+
+
+
+TabTeleport:AddButton({
+
+    Name = "Hill",
+
+    Callback = function()
+
+        teleportTo(-349.32, 65.65, -439.50)
+
+    end
+
+})
+
 
 
 -- Scripts Tab
