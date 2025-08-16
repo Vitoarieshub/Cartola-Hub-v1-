@@ -8,7 +8,7 @@ local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/Snxd
 
 local Window = OrionLib:MakeWindow({
 
-    Name = "Cartola Hub Brookhaven Version - 3.2",
+    Name = "Cartola Hub Brookhaven",
 
     HidePremium = false,
 
