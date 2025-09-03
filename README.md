@@ -52,8 +52,17 @@ TabCredits:AddParagraph("Admin", "Tanjiro_kamado7Wk")
 
 
 
+TabCredits:AddButton({
 
+    Name = "Cartola Hub",
 
+    Callback = function()
+
+           loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Cartola-Hub-Brookhaven-/refs/heads/main/Cartola.txt"))()
+        
+    end
+
+})
 
 
 -- Main Tab
