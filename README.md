@@ -964,6 +964,18 @@ TabScripts:AddButton({
 })
 
 
+TabScripts:AddButton({
+
+    Name = "Galaxy Hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/GalaxyStudio646/Galaxy-Hub/refs/heads/main/Universal/GalaxyHub"))()
+		
+    end
+
+})
+
 
 -- Init UI
 
