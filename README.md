@@ -643,7 +643,126 @@ TabPlayer:AddButton({
 TabPlayer:AddParagraph("Misc", "")
 
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
+local antiSeatEnabled = false
+local seatedConnection = nil
+local characterConnection = nil
+local seatWatcher = nil
+local ignoreSeats = {}
+
+-- Verifica se o assento faz parte de um veículo
+local function isSeatInVehicle(seat)
+	if seat:IsA("VehicleSeat") then
+		return true
+	end
+	local model = seat:FindFirstAncestorOfClass("Model")
+	if model then
+		for _, part in ipairs(model:GetDescendants()) do
+			if part:IsA("VehicleSeat") or part.Name:lower():match("wheel") then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+-- Impede o personagem de sentar em assentos de veículos
+local function preventSitting(character)
+	local humanoid = character:WaitForChild("Humanoid", 5)
+	if not humanoid then return end
+
+	if seatedConnection then
+		seatedConnection:Disconnect()
+	end
+
+	seatedConnection = humanoid.Seated:Connect(function(isSeated, seat)
+		if isSeated and antiSeatEnabled and seat and isSeatInVehicle(seat) then
+			humanoid.Sit = false
+		end
+	end)
+
+	if humanoid.Sit and isSeatInVehicle(humanoid.SeatPart) then
+		humanoid.Sit = false
+	end
+end
+
+-- Desativa assentos de veículos
+local function disableVehicleSeats()
+	for _, obj in ipairs(workspace:GetDescendants()) do
+		if (obj:IsA("Seat") or obj:IsA("VehicleSeat")) and isSeatInVehicle(obj) then
+			if not ignoreSeats[obj] then
+				ignoreSeats[obj] = obj.CanTouch
+				obj.CanTouch = false
+			end
+		end
+	end
+end
+
+-- Restaura os assentos
+local function restoreSeats()
+	for seat, original in pairs(ignoreSeats) do
+		if seat and seat:IsDescendantOf(workspace) then
+			seat.CanTouch = original
+		end
+	end
+	ignoreSeats = {}
+end
+
+-- Observa novos assentos sendo criados
+local function watchNewSeats()
+	if seatWatcher then seatWatcher:Disconnect() end
+	seatWatcher = workspace.DescendantAdded:Connect(function(desc)
+		if antiSeatEnabled and (desc:IsA("Seat") or desc:IsA("VehicleSeat")) then
+			task.wait(0.1)
+			if isSeatInVehicle(desc) then
+				ignoreSeats[desc] = desc.CanTouch
+				desc.CanTouch = false
+			end
+		end
+	end)
+end
+
+-- Toggle Anti Vehicle
+TabPlayer:AddToggle({
+	Name = "Anti Vehicle Seat",
+	Default = false,
+	Callback = function(Value)
+		antiSeatEnabled = Value
+
+		if Value then
+			-- Ativar
+			if LocalPlayer.Character then
+				preventSitting(LocalPlayer.Character)
+			end
+
+			if characterConnection then
+				characterConnection:Disconnect()
+			end
+			characterConnection = LocalPlayer.CharacterAdded:Connect(preventSitting)
+
+			disableVehicleSeats()
+			watchNewSeats()
+		else
+			-- Desativar
+			if seatedConnection then
+				seatedConnection:Disconnect()
+				seatedConnection = nil
+			end
+			if characterConnection then
+				characterConnection:Disconnect()
+				characterConnection = nil
+			end
+			if seatWatcher then
+				seatWatcher:Disconnect()
+				seatWatcher = nil
+			end
+
+			restoreSeats()
+		end
+	end
+})
 
 
 
