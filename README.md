@@ -726,7 +726,7 @@ end
 
 -- Toggle Anti Vehicle
 TabPlayer:AddToggle({
-	Name = "Anti Vehicle Seat",
+	Name = "Anti Vehicle",
 	Default = false,
 	Callback = function(Value)
 		antiSeatEnabled = Value
@@ -766,9 +766,62 @@ TabPlayer:AddToggle({
 
 
 
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+local antiSeatEnabled = false
+local seatConnections = {}
+
+-- Função para proteger contra sentar
+local function setupAntiSit(character)
+    local humanoid = character:WaitForChild("Humanoid", 5)
+    if not humanoid then return end
+
+    local connection = humanoid.Seated:Connect(function(isSeated)
+        if isSeated and antiSeatEnabled then
+            humanoid.Sit = false
+        end
+    end)
+
+    table.insert(seatConnections, connection)
+end
+
+-- Função para limpar conexões anteriores
+local function disconnectAllSeats()
+    for _, conn in ipairs(seatConnections) do
+        if conn.Connected then
+            conn:Disconnect()
+        end
+    end
+    table.clear(seatConnections)
+end
+
+-- Detectar novo personagem
+LocalPlayer.CharacterAdded:Connect(function(char)
+    if antiSeatEnabled then
+        setupAntiSit(char)
+    end
+end)
+
+-- Toggle Anti Sit
+TabPlayer:AddToggle({
+    Name = "Anti Sit",
+    Default = false,
+    Callback = function(Value)
+        antiSeatEnabled = Value
+
+        if Value then
+            -- Aplicar imediatamente se já tiver personagem
+            if LocalPlayer.Character then
+                setupAntiSit(LocalPlayer.Character)
+            end
+        else
+            disconnectAllSeats()
+        end
+    end
+})
 
 
-TabPlayer:AddParagraph("Admin", "")
 
 local Players = game:GetService("Players")
 
@@ -952,21 +1005,6 @@ TabScripts:AddButton({
 })
 
 
-
-TabScripts:AddButton({
-
-    Name = "MokurenX",
-
-    Callback = function()
-
-        loadstring(game:HttpGet("https://safetycode-free.vercel.app/api/run?uid=sOVADqgSEOWfKJeo23vm"))()
-
-    end
-
-})
-
-
-
 TabScripts:AddButton({
 
     Name = "Bruxus Hub",
@@ -1000,20 +1038,6 @@ TabScripts:AddButton({
     Callback = function()
 
         loadstring(game:HttpGet("https://raw.githubusercontent.com/Laelmano24/Rael-Hub/main/main.txt"))()
-
-    end
-
-})
-
-
-
-TabScripts:AddButton({
-
-    Name = "SP Hub",
-
-    Callback = function()
-
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/as6cd0/SP_Hub/main/Brookhaven"))()
 
     end
 
