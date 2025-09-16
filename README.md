@@ -649,6 +649,64 @@ TabPlayer:AddParagraph("Misc", "")
 
 
 
+TabPlayer:AddParagraph("Admin", "")
+
+local Players = game:GetService("Players")
+
+-- Função que aplica ESP num player
+local function ApplyESP(v)
+    if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+        humanoid.NameDisplayDistance = 9e9
+        humanoid.NameOcclusion = Enum.NameOcclusion.NoOcclusion
+        humanoid.HealthDisplayDistance = 9e9
+        humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOn
+        humanoid.Health = humanoid.Health -- "refresh"
+    end
+end
+
+-- Função que remove ESP de um player
+local function RemoveESP(v)
+    if v.Character and v.Character:FindFirstChildOfClass("Humanoid") then
+        local humanoid = v.Character:FindFirstChildOfClass("Humanoid")
+        humanoid.NameDisplayDistance = 0
+        humanoid.HealthDisplayDistance = 0
+        humanoid.HealthDisplayType = Enum.HumanoidHealthDisplayType.AlwaysOff
+    end
+end
+
+-- Toggle no TabPlayer
+TabPlayer:AddToggle({
+    Name = "ESP Players",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            -- Ativar ESP
+            for _, v in ipairs(Players:GetPlayers()) do
+                ApplyESP(v)
+                v.CharacterAdded:Connect(function()
+                    task.wait(0.33)
+                    ApplyESP(v)
+                end)
+            end
+
+            Players.PlayerAdded:Connect(function(v)
+                ApplyESP(v)
+                v.CharacterAdded:Connect(function()
+                    task.wait(0.33)
+                    ApplyESP(v)
+                end)
+            end)
+        else
+            -- Desativar ESP
+            for _, v in ipairs(Players:GetPlayers()) do
+                RemoveESP(v)
+            end
+        end
+    end
+})
+
+
 -- Teleport Tab
 
 local TabTeleport = Window:MakeTab({
