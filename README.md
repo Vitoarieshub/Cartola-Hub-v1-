@@ -58,7 +58,7 @@ TabCredits:AddButton({
 
     Callback = function()
 
-           loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Cartola-Hub-Brookhaven-/refs/heads/main/Cartola.txt"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Davi999z/Cartola-Hub/refs/heads/main/Brookhaven",true))()
         
     end
 
@@ -645,72 +645,7 @@ TabPlayer:AddParagraph("Misc", "")
 
 
 
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
 
-local antiPushConnection = nil
-
-local function enableAntiPush()
-	if not LocalPlayer.Character then return end
-	local rootPart = LocalPlayer.Character:WaitForChild("HumanoidRootPart", 5)
-	if not rootPart then return end
-
-	antiPushConnection = RunService.Heartbeat:Connect(function()
-		if not rootPart or not rootPart.Parent then return end
-		rootPart.Velocity = Vector3.zero
-		rootPart.RotVelocity = Vector3.zero
-		rootPart.AssemblyLinearVelocity = Vector3.zero
-		rootPart.AssemblyAngularVelocity = Vector3.zero
-
-		for _, v in pairs(rootPart:GetChildren()) do
-			if v:IsA("BodyVelocity") or v:IsA("BodyForce") or v:IsA("BodyThrust") then
-				v:Destroy()
-			end
-		end
-	end)
-end
-
-local function disableAntiPush()
-	if antiPushConnection then
-		antiPushConnection:Disconnect()
-		antiPushConnection = nil
-	end
-end
-
--- Conectar novamente ao trocar de personagem
-Players.LocalPlayer.CharacterAdded:Connect(function()
-	if getgenv().AntiPushEnabled then
-		task.wait(1)
-		enableAntiPush()
-	end
-end)
-
--- Adiciona o Toggle no TabMain
-getgenv().AntiPushEnabled = false
-
-TabPlayer:AddToggle({
-	Name = "Anti Push",
-	Default = false,
-	Callback = function(Value)
-		getgenv().AntiPushEnabled = Value
-		if Value then
-			enableAntiPush()
-			game:GetService("StarterGui"):SetCore("SendNotification", {
-				Title = "Anti Push",
-				Text = "Activating!",
-				Duration = 3
-			})
-		else
-			disableAntiPush()
-			game:GetService("StarterGui"):SetCore("SendNotification", {
-				Title = "Anti Push",
-				Text = "Disabled.",
-				Duration = 3
-			})
-		end
-	end
-})
 
 
 
