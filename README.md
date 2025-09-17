@@ -899,20 +899,6 @@ TabPlayer:AddToggle({
 })
 
 
--- Player Tab
-
-local TabHome = Window:MakeTab({
-
-    Name = "Home",
-
-    Icon = "rbxassetid://130563590371769",
-
-    PremiumOnly = false
-
-})
-
-
-
 -- Teleport Tab
 
 local TabTeleport = Window:MakeTab({
