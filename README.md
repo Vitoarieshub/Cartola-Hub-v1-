@@ -298,27 +298,6 @@ TabMain:AddToggle({
 })
 
 
-local function isBanWall(part)
-    if not part:IsA("BasePart") then return false end
-    local name = part.Name:lower()
-    return name:match("ban") or name:match("barrier")
-end
-
-TabHome:AddButton({
-    Name = "Unban",
-    Callback = function()
-        local count = 0
-        for _, part in ipairs(workspace:GetDescendants()) do
-            if isBanWall(part) then
-                part:Destroy()
-                count += 1
-            end
-        end
-        print("Unban Manual:", count)
-    end
-})
-
-
 local Lighting = game:GetService("Lighting")
 local RunService = game:GetService("RunService")
 local nightConnection
