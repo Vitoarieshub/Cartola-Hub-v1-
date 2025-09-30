@@ -1,4 +1,4 @@
--- Load OrionLib
+ -- Load OrionLib
 
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/Snxdfer/back-ups-for-libs/main/Orion.lua'))()
 
@@ -975,6 +975,33 @@ local TabScripts = Window:MakeTab({
 })
 
 TabScripts:AddParagraph("Brookhaven", "")
+
+
+TabScripts:AddButton({
+
+    Name = "Drip Client",
+
+    Callback = function()
+
+        loadstring(game:HttpGet(('https://raw.githubusercontent.com/realgengar/Main/refs/heads/main/base.lua'),true))()
+        
+    end
+
+})
+
+
+TabScripts:AddButton({
+
+    Name = "FURIA Hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dboas123432sx/bsx_hub/refs/heads/main/FURIAHUB-v1"))()
+        
+    end
+
+})
+
 
 
 TabScripts:AddButton({
