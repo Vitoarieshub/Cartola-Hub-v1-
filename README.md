@@ -91,6 +91,20 @@ TabMain:AddButton({
 })
 
 
+TabMain:AddButton({
+
+    Name = "Fly Car",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Fly-Cartola-Hub-/refs/heads/main/README.md"))()
+        
+    end
+
+})
+
+
+
 local UserInputService = game:GetService("UserInputService")
 
 local Players = game:GetService("Players")
