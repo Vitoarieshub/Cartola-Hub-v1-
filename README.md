@@ -97,7 +97,7 @@ TabMain:AddButton({
 
     Callback = function()
 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Fly-Cartola-Hub-/refs/heads/main/README.md"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Fly-car-Gui/refs/heads/main/README.md"))()
         
     end
 
