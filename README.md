@@ -1073,7 +1073,7 @@ TabScripts:AddButton({
 
 TabScripts:AddButton({
 
-    Name = "Real hub",
+    Name = "Rael hub",
 
     Callback = function()
 
@@ -1103,28 +1103,16 @@ TabScripts:AddParagraph("Universal", "")
 
 TabScripts:AddButton({
 
-    Name = "Ghost Hub",
+    Name = "Fly Invincible",
 
     Callback = function()
 
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/GhostPlayer352/Test4/main/GhostHub'))()
-
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-flight-of-the-Invincible-59729"))()
+		
     end
 
 })
 
-
-TabScripts:AddButton({
-
-    Name = "Dragon Menu",
-
-    Callback = function()
-
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/DragonUniversal/Dragon-Script-/refs/heads/main/main.lua"))()
-
-    end
-
-})
 
 
 TabScripts:AddButton({
