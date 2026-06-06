@@ -1114,6 +1114,18 @@ TabScripts:AddButton({
 })
 
 
+TabScripts:AddButton({
+
+    Name = "Galaxy Hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/GalaxyStudio646/Galaxy-Hub/refs/heads/main/Universal/GalaxyHub"))()
+		
+    end
+
+})
+
 
 TabScripts:AddButton({
 
@@ -1128,14 +1140,17 @@ TabScripts:AddButton({
 })
 
 
+TabScripts:AddParagraph("Murder Mystery", "")
+
+
 TabScripts:AddButton({
 
-    Name = "Galaxy Hub",
+    Name = " Menu",
 
     Callback = function()
 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/GalaxyStudio646/Galaxy-Hub/refs/heads/main/Universal/GalaxyHub"))()
-		
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/universal-roblox/Mm2/refs/heads/main/Murder-Mystery-2.lua"))()
+
     end
 
 })
