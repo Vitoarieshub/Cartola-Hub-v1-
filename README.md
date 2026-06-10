@@ -1140,6 +1140,22 @@ TabScripts:AddButton({
 })
 
 
+TabScripts:AddParagraph("Prison Life", "")
+
+
+TabScripts:AddButton({
+
+    Name = " YWeapons",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/zenss555a/script/refs/heads/main/Prison-Life.lua", true))()
+
+    end
+
+})
+
+
 TabScripts:AddParagraph("Murder Mystery", "")
 
 
