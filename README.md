@@ -1006,20 +1006,6 @@ TabScripts:AddButton({
 
 TabScripts:AddButton({
 
-    Name = "FURIA Hub",
-
-    Callback = function()
-
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Dboas123432sx/bsx_hub/refs/heads/main/FURIAHUB-v1"))()
-        
-    end
-
-})
-
-
-
-TabScripts:AddButton({
-
     Name = "Brutus Hub",
 
     Callback = function()
@@ -1145,7 +1131,7 @@ TabScripts:AddParagraph("Prison Life", "")
 
 TabScripts:AddButton({
 
-    Name = " YWeapons",
+    Name = " Selenium Hub",
 
     Callback = function()
 
