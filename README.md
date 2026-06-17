@@ -1102,6 +1102,19 @@ TabScripts:AddButton({
 
 TabScripts:AddButton({
 
+    Name = "YARHM Menu",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/yarhm.lua", false))()
+
+    end
+
+})
+
+
+TabScripts:AddButton({
+
     Name = "Galaxy Hub",
 
     Callback = function()
@@ -1115,11 +1128,11 @@ TabScripts:AddButton({
 
 TabScripts:AddButton({
 
-    Name = "YARHM Menu",
+    Name = "Free emote",
 
     Callback = function()
 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Joystickplays/psychic-octo-invention/main/yarhm.lua", false))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Free-emote/refs/heads/main/Delta%20mad%20stuffs"))()
 
     end
 
