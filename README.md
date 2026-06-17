@@ -1006,11 +1006,11 @@ TabScripts:AddButton({
 
 TabScripts:AddButton({
 
-    Name = "Brutus Hub",
+    Name = "Ice Hub Key",
 
     Callback = function()
 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/codenixstudios/brutus-hub/script/Games/brookhaven.lua"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/NewIceHub/BrookhavenRP/refs/heads/main/Source.lua"))()
         
     end
 
