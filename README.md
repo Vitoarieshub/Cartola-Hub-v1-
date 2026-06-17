@@ -1087,18 +1087,6 @@ TabScripts:AddButton({
 TabScripts:AddParagraph("Universal", "")
 
 
-TabScripts:AddButton({
-
-    Name = "Fly Invincible",
-
-    Callback = function()
-
-        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-flight-of-the-Invincible-59729"))()
-		
-    end
-
-})
-
 
 TabScripts:AddButton({
 
@@ -1125,6 +1113,30 @@ TabScripts:AddButton({
 
 })
 
+TabScripts:AddButton({
+
+    Name = "Fly Invincible",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-flight-of-the-Invincible-59729"))()
+		
+    end
+
+})
+
+
+TabScripts:AddButton({
+
+    Name = "Animations Invincible",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/giobolqv1/invincible-characters-animations-by-GioBolqv1-/refs/heads/main/universal.lua"))()
+		
+    end
+
+})
 
 TabScripts:AddButton({
 
