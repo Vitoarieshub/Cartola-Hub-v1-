@@ -963,6 +963,66 @@ local TabTeleport = Window:MakeTab({
 })
 
 
+TabTeleport:AddParagraph("Houses", "")
+
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Workspace = game:GetService("Workspace")
+
+local function isBanWall(part)
+    return part:IsA("BasePart")
+        and part.Transparency == 1
+        and part.Color == Color3.fromRGB(255, 0, 0)
+        and part.CanCollide == true
+        and part.Size.Magnitude > 10
+end
+
+local autoUnbanConnection = nil
+
+TabTeleport:AddToggle({
+    Name = "Auto Unban",
+    CurrentValue = false,
+    Flag = "AutoUnban",
+    Callback = function(Value)
+        if Value then
+            for _, part in pairs(Workspace:GetDescendants()) do
+                if isBanWall(part) then
+                    part:Destroy()
+                end
+            end
+
+            autoUnbanConnection = Workspace.DescendantAdded:Connect(function(descendant)
+                if isBanWall(descendant) then
+                    task.wait(0.1)
+                    descendant:Destroy()
+                end
+            end)
+        else
+            if autoUnbanConnection then
+                autoUnbanConnection:Disconnect()
+                autoUnbanConnection = nil
+            end
+        end
+    end
+})
+
+TabTeleport:AddButton({
+    Name = "Unban",
+    Callback = function()
+        local count = 0
+
+        for _, part in pairs(Workspace:GetDescendants()) do
+            if isBanWall(part) then
+                part:Destroy()
+                count += 1
+            end
+        end
+
+        print("Removidas:", count)
+    end
+})
+
 
 local function teleportTo(x, y, z)
 
