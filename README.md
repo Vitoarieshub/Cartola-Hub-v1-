@@ -835,6 +835,64 @@ TabPlayer:AddToggle({
 })
 
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local antiBringParts = false
+local connection
+
+local originalCollision = {}
+
+TabPlayer:AddToggle({
+    Name = "Anti Script",
+    Default = false,
+    Callback = function(Value)
+        antiBringParts = Value
+
+        if not Value then
+            if connection then
+                connection:Disconnect()
+                connection = nil
+            end
+
+            for part, canCollide in pairs(originalCollision) do
+                if part and part.Parent then
+                    part.CanCollide = canCollide
+                end
+            end
+
+            table.clear(originalCollision)
+            return
+        end
+
+        connection = RunService.Heartbeat:Connect(function()
+            local char = LocalPlayer.Character
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+
+            if not root then
+                return
+            end
+
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("BasePart")
+                and not obj:IsDescendantOf(char) then
+
+                    local dist = (obj.Position - root.Position).Magnitude
+
+                    if dist <= 8 and not obj.Anchored then
+                        if originalCollision[obj] == nil then
+                            originalCollision[obj] = obj.CanCollide
+                        end
+
+                        obj.CanCollide = false
+                    end
+                end
+            end
+        end)
+    end
+})
+
 
 local Players = game:GetService("Players")
 
