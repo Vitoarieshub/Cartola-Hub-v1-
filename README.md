@@ -104,6 +104,42 @@ TabMain:AddButton({
 })
 
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local noclipEnabled = false
+
+-- Botão de ativar/desativar com o formato TabMain:AddToggle
+TabMain:AddToggle({
+    Name = "Noclip", 
+    Default = false,
+    Callback = function(Value)
+        noclipEnabled = Value
+        
+        -- SISTEMA ANTI-BUG: Quando desativa, dá um reset na física para voltar a colidir na hora
+        if not Value and player.Character then
+            local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+            if humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+            end
+        end
+        
+        print("Noclip:", Value and "Ativado" or "Desativado")
+    end
+})
+
+-- Loop para desativar colisão 
+RunService.Stepped:Connect(function()
+    if noclipEnabled and player.Character then
+        for _, part in ipairs(player.Character:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+end)
+
 
 local UserInputService = game:GetService("UserInputService")
 
