@@ -1174,7 +1174,6 @@ TabScripts:AddButton({
 })
 
 
-
 TabScripts:AddButton({
 
     Name = "Rael hub",
@@ -1186,7 +1185,6 @@ TabScripts:AddButton({
     end
 
 })
-
 
 
 TabScripts:AddButton({
@@ -1205,7 +1203,6 @@ TabScripts:AddButton({
 TabScripts:AddParagraph("Universal", "")
 
 
-
 TabScripts:AddButton({
 
     Name = "YARHM Menu",
@@ -1218,6 +1215,17 @@ TabScripts:AddButton({
 
 })
 
+TabScripts:AddButton({
+
+    Name = "Cryptic Hub",
+
+    Callback = function()
+
+        loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Cryptic-143414"))()
+		
+    end
+
+})
 
 TabScripts:AddButton({
 
