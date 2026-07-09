@@ -837,6 +837,68 @@ TabPlayer:AddToggle({
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+local antiFlingEnabled = false
+
+local function limparFisica(character)
+    for _, part in ipairs(character:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = false
+            part.Velocity = Vector3.new(0, 0, 0)
+            part.RotVelocity = Vector3.new(0, 0, 0)
+        end
+    end
+end
+
+TabPlayer:AddToggle({
+    Name = "Anti Fling",
+    Default = false,
+    Callback = function(state)
+        antiFlingEnabled = state
+        if not state then
+            task.wait(0.1)
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then
+                    local character = player.Character
+                    if character then
+                        for _, part in ipairs(character:GetDescendants()) do
+                            if part:IsA("BasePart") then
+                                part.CanCollide = true
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+})
+
+RunService.Stepped:Connect(function()
+    if not antiFlingEnabled then return end
+    
+    local meuChar = LocalPlayer.Character
+    if meuChar then
+        for _, part in ipairs(meuChar:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                part.CanCollide = false
+            end
+        end
+    end
+
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            local character = player.Character
+            if character and character.Parent then
+                limparFisica(character)
+            end
+        end
+    end
+end)
+
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 local antiBringParts = false
