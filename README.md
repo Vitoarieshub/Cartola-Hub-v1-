@@ -91,19 +91,6 @@ TabMain:AddButton({
 })
 
 
-TabMain:AddButton({
-
-    Name = "Fly Car",
-
-    Callback = function()
-
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Vitoarieshub/Fly-car-Gui/refs/heads/main/README.md"))()
-        
-    end
-
-})
-
-
 
 local UserInputService = game:GetService("UserInputService")
 
@@ -1332,7 +1319,7 @@ TabScripts:AddButton({
 
     Callback = function()
 
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/Gazer-Ha/Free-emote/refs/heads/main/Delta%20mad%20stuffs"))()
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/7yd7/Hub/refs/heads/Branch/GUIS/Emotes.lua"))()
 
     end
 
